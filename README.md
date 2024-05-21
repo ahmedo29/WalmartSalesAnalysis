@@ -105,3 +105,104 @@ The dataset was obtained from the [Kaggle Walmart Sales Forecasting Competition]
 8. Which time of the day do customers give most ratings per branch?
 9. Which day fo the week has the best avg ratings?
 10. Which day of the week has the best average ratings per branch?
+
+## Code
+
+## Data Wrangling
+
+```sql
+-- Creating the database
+CREATE DATABASE salesDataWalmart;
+
+-- Creating the table
+CREATE TABLE sales (
+    invoice_id VARCHAR(30) NOT NULL PRIMARY KEY,
+    branch VARCHAR(5) NOT NULL,
+    city VARCHAR(30) NOT NULL,
+    customer_type VARCHAR(30) NOT NULL,
+    gender VARCHAR(10) NOT NULL,
+    product_line VARCHAR(100) NOT NULL,
+    unit_price DECIMAL(10,2) NOT NULL,
+    quantity INTEGER NOT NULL,
+    VAT FLOAT NOT NULL,
+    total DECIMAL(10,2) NOT NULL,
+    date DATE NOT NULL,
+    time TIMESTAMP NOT NULL,
+    payment_method DECIMAL(10,2) NOT NULL,
+    cogs DECIMAL(10,2) NOT NULL,
+    gross_margin_percentage FLOAT NOT NULL,
+    gross_income DECIMAL(10,2) NOT NULL,
+    rating FLOAT NOT NULL
+);
+
+```
+
+## Feature Engineering
+
+```sql
+*
+	Feature Engineering
+	Adding new columns which will help our analysis
+	1. time_of_day
+	2. day_name
+	3. month_name
+*/
+
+-- 1.
+SELECT
+    time,
+    (CASE
+        WHEN CAST(time AS TIME) BETWEEN '00:00:00' AND '11:59:59' THEN 'Morning'
+        WHEN CAST(time AS TIME) BETWEEN '12:00:00' AND '15:59:59' THEN 'Afternoon'
+        ELSE 'Evening'
+    END) AS time_of_day
+FROM sales;
+
+-- 2.
+SELECT
+	date,
+	DATENAME(dw, date) AS day_name
+FROM sales
+ORDER BY date;
+
+-- 3.
+SELECT
+	date,
+	DATENAME(month, date) as month_name
+FROM sales;
+
+```
+
+## Creating the view
+
+```sql
+-- Created a view with the added columns we need
+CREATE VIEW sales_view AS 
+SELECT
+	Invoice_ID,
+	Branch,
+    City,
+    Customer_type,
+    Gender,
+    Product_line,
+    Unit_price,
+    Quantity,
+    VAT,
+    Total,
+    Date,
+	DATENAME(dw, date) AS day_name,
+	DATENAME(month, date) as month_name,
+    Time,
+	(CASE
+        WHEN CAST(time AS TIME) BETWEEN '00:00:00' AND '11:59:59' THEN 'Morning'
+        WHEN CAST(time AS TIME) BETWEEN '12:00:00' AND '15:59:59' THEN 'Afternoon'
+        ELSE 'Evening'
+    END) AS time_of_day,
+    Payment_method,
+    cogs,
+    gross_margin_percentage,
+    gross_income,
+    Rating
+FROM sales;
+
+```
