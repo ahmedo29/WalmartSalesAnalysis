@@ -210,7 +210,7 @@ FROM sales;
 ## Exploratory Data Analysis (EDA)
 
 ```sql
-* 
+*/ 
 	Exploratory Data Analysis (EDA)
 	I will be answering a range of business questions using SQL statements
 */
